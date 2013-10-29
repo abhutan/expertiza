@@ -300,23 +300,29 @@ class Assignment < ActiveRecord::Base
     return path + FileHelper.clean_path(self.directory_path)
   end
 
+
+
   # Check whether review, metareview, etc.. is allowed
   # If topic_id is set, check for that topic only. Otherwise, check to see if there is any topic which can be reviewed(etc) now
   def check_condition(column, topic_id=nil)
     # the drop topic deadline should not play any role in picking the next due date
     # get the drop_topic_deadline_id to exclude it 
-    drop_topic_deadline_id = DeadlineType.find_by_name('drop_topic').id
+    #drop_topic_deadline_id = DeadlineType.find_by_name('drop_topic').id
     if self.staggered_deadline?
       # next_due_date - the nearest due date that hasn't passed
-      if topic_id
-        # next for topic
-        next_due_date = TopicDeadline.find(:first, :conditions => ['topic_id = ? and due_at >= ? and deadline_type_id <> ?', topic_id, Time.now, drop_topic_deadline_id], :order => 'due_at')
-      else
-        # next for assignment
-        next_due_date = TopicDeadline.find(:first, :conditions => ['assignment_id = ? and due_at >= ? and deadline_type_id <> ?', self.id, Time.now, drop_topic_deadline_id], :joins => {:topic => :assignment}, :order => 'due_at')
-      end
+
+      next_due_date = find_next_due_date(topic_id,self.id)
+
+      #if topic_id
+      #  # next for topic
+      #  next_due_date = TopicDeadline.find(:first, :conditions => ['topic_id = ? and due_at >= ? and deadline_type_id <> ?', topic_id, Time.now, drop_topic_deadline_id], :order => 'due_at')
+      #else
+      #  # next for assignment
+      #  next_due_date = TopicDeadline.find(:first, :conditions => ['assignment_id = ? and due_at >= ? and deadline_type_id <> ?', self.id, Time.now, drop_topic_deadline_id], :joins => {:topic => :assignment}, :order => 'due_at')
+      #end
     else
-      next_due_date = DueDate.find(:first, :conditions => ['assignment_id = ? and due_at >= ? and deadline_type_id <> ?', self.id, Time.now, drop_topic_deadline_id], :order => 'due_at')
+      next_due_date = find_next_due_date(self.id)
+      #next_due_date = DueDate.find(:first, :conditions => ['assignment_id = ? and due_at >= ? and deadline_type_id <> ?', self.id, Time.now, drop_topic_deadline_id], :order => 'due_at')
     end
 
     if next_due_date.nil?

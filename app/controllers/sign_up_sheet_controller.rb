@@ -27,13 +27,25 @@ class SignUpSheetController < ApplicationController
   #Contains links that let an admin or Instructor edit, delete, view enrolled/waitlisted members for each topic
   #Also contains links to delete topics and modify the deadlines for individual topics. Staggered means that different topics
   #can have different deadlines.
-  def add_signup_topics_staggered
+  def add_signup_topics
     load_add_signup_topics(params[:id])
 
-    @review_rounds = Assignment.find(params[:id]).get_review_rounds
-    @topics = SignUpTopic.find_all_by_assignment_id(params[:id])
+    if @assignment.staggered_deadline ==true
 
-    #Use this until you figure out how to initialize this array
+      @review_rounds = Assignment.find(params[:id]).get_review_rounds
+      @topics = SignUpTopic.find_all_by_assignment_id(params[:id])
+
+      #Function call to set up due dates
+      assignment_due_date
+
+      #Render a view different from the add_sign_up.html.erb  , so rendering a view for staggered deadlines.
+      render "add_signup_topics_staggered"
+
+    end
+  end
+
+  def assignment_due_date
+       #Use this until you figure out how to initialize this array
     @duedates = SignUpTopic.find_by_sql("SELECT s.id as topic_id FROM sign_up_topics s WHERE s.assignment_id = " + params[:id].to_s)
 
     if !@topics.nil?
@@ -77,15 +89,11 @@ class SignUpSheetController < ApplicationController
         end
         i = i + 1
       }
+
     end
   end
 
-  #similar to the above function except that all the topics and review/submission rounds have the similar deadlines
-  def add_signup_topics
-    load_add_signup_topics(params[:id])
-  end
-
-  #Seems like this function is similar to the above function> we are not quite sure what publishing rights mean. Seems like 
+  #Seems like this function is similar to the above function> we are not quite sure what publishing rights mean. Seems like
   #the values for the last column in http://expertiza.ncsu.edu/student_task/list are sourced from here
   def view_publishing_rights
     load_add_signup_topics(params[:id])
@@ -157,11 +165,13 @@ class SignUpSheetController < ApplicationController
         @sign_up_topic.micropayment = params[:topic][:micropayment]
       end
 
+=begin
       if @assignment.staggered_deadline?
         topic_set = Array.new
         topic = @sign_up_topic.id
 
       end
+=end
 
       if @sign_up_topic.save
         #NotificationLimit.create(:topic_id => @sign_up_topic.id)
@@ -173,15 +183,11 @@ class SignUpSheetController < ApplicationController
     end
   end
 
-  #simple function that redirects ti the /add_signup_topics or the /add_signup_topics_staggered page depending on assignment type
+  #simple function that redirects t0 the /add_signup_topics or the /add_signup_topics_staggered page depending on assignment type
   #staggered means that different topics can have different deadlines.
   def redirect_to_sign_up(assignment_id)
     assignment = Assignment.find(assignment_id)
-    if assignment.staggered_deadline == true
-      redirect_to :action => 'add_signup_topics_staggered', :id => assignment_id
-    else
       redirect_to :action => 'add_signup_topics', :id => assignment_id
-    end
   end
 
   #This method is used to delete signup topics
@@ -665,11 +671,13 @@ class SignUpSheetController < ApplicationController
 
     @assignment = Assignment.find(params[:id])
 
+=begin
     if @assignment.staggered_deadline?
       topic_set = Array.new
       topic = @sign_up_topic.id
 
     end
+=end
 
     if @sign_up_topic.save
 

@@ -24,6 +24,7 @@ class StudentReviewController < ApplicationController
       @num_metareviews_completed += 1 if map.response
     end
     @num_metareviews_in_progress = @num_metareviews_total - @num_metareviews_completed
+
     if @assignment.staggered_deadline?
       @review_mappings.each { |review_mapping|
         #ACS Removed the if condition(and corressponding else) which differentiate assignments as team and individual assignments
@@ -57,6 +58,7 @@ class StudentReviewController < ApplicationController
         end
       end
     end
+
   end  
   
 end

@@ -6,7 +6,7 @@
 <th width="5%">Num. of slots</th>
 <th width="5%">Available slots</th>
 <th width="5%">Num. on waitlist</th>
-<% if @assignment.staggered_deadline == true %>
+<% if @assignment.staggered_deadline? %>
     <th width="5%">Dependencies</th>
 <% end %>
 <% if @assignment.has_partner_ads?(params[:id]) %>

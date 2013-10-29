@@ -1,5 +1,5 @@
 require 'test_helper'
-require 'ruby-debug'
+#require 'ruby-debug'
 require 'signup_controller'
 
 
@@ -19,7 +19,7 @@ class SignUpSheetControllerTest < ActionController::TestCase
   end
 
   test "should_show_add_signup_topics_staggered" do
-    get :add_signup_topics_staggered, :id => assignments(:assignment2).id
+    get :add_signup_topics, :id => assignments(:assignment2).id
     assert_response :success
   end
 

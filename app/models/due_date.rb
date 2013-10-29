@@ -77,4 +77,10 @@ class DueDate < ActiveRecord::Base
     #puts"~~~~~~~~~#{self.flag.to_s}"
   end
 
+  def find_next_due_date(assignment_id)
+    drop_topic_deadline_id = DeadlineType.find_drop_topic_deadline_id()
+    DueDate.find(:first, :conditions => ['assignment_id = ? and due_at >= ? and deadline_type_id <> ?', self.id, Time.now, drop_topic_deadline_id], :order => 'due_at')
+  end
+
+
 end
