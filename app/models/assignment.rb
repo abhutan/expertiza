@@ -311,17 +311,21 @@ class Assignment < ActiveRecord::Base
     if self.staggered_deadline?
       # next_due_date - the nearest due date that hasn't passed
 
-      next_due_date = find_next_due_date(topic_id,self.id)
+      next_due_date = TopicDeadline.find_next_due_date(topic_id,self.id)
 
-      #if topic_id
-      #  # next for topic
-      #  next_due_date = TopicDeadline.find(:first, :conditions => ['topic_id = ? and due_at >= ? and deadline_type_id <> ?', topic_id, Time.now, drop_topic_deadline_id], :order => 'due_at')
-      #else
-      #  # next for assignment
-      #  next_due_date = TopicDeadline.find(:first, :conditions => ['assignment_id = ? and due_at >= ? and deadline_type_id <> ?', self.id, Time.now, drop_topic_deadline_id], :joins => {:topic => :assignment}, :order => 'due_at')
-      #end
+
+=begin
+      if topic_id
+        # next for topic
+        next_due_date = TopicDeadline.find(:first, :conditions => ['topic_id = ? and due_at >= ? and deadline_type_id <> ?', topic_id, Time.now, drop_topic_deadline_id], :order => 'due_at')
+      else
+        # next for assignment
+        next_due_date = TopicDeadline.find(:first, :conditions => ['assignment_id = ? and due_at >= ? and deadline_type_id <> ?', self.id, Time.now, drop_topic_deadline_id], :joins => {:topic => :assignment}, :order => 'due_at')
+      end
+=end
+
     else
-      next_due_date = find_next_due_date(self.id)
+      next_due_date = DueDate.find_next_due_date(self.id)
       #next_due_date = DueDate.find(:first, :conditions => ['assignment_id = ? and due_at >= ? and deadline_type_id <> ?', self.id, Time.now, drop_topic_deadline_id], :order => 'due_at')
     end
 

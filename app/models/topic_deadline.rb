@@ -18,7 +18,7 @@ class TopicDeadline < ActiveRecord::Base
     return next_due_date
   end
 
-  def find_next_due_date(topic_id,assignment_id)
+  def self.find_next_due_date(topic_id,assignment_id)
     drop_topic_deadline_id = DeadlineType.find_drop_topic_deadline_id()
     if topic_id
       TopicDeadline.find(:first, :conditions => ['topic_id = ? and due_at >= ? and deadline_type_id <> ?', topic_id, Time.now, drop_topic_deadline_id], :order => 'due_at')
