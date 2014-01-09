@@ -1,6 +1,7 @@
-class MetareviewResponseMap < ResponseMap
+=begin
+class MetareviewResponseMap < Response
   belongs_to :reviewee, :class_name => 'Participant', :foreign_key => 'reviewee_id'
-  belongs_to :review_mapping, :class_name => 'ResponseMap', :foreign_key => 'reviewed_object_id'   
+  belongs_to :review_mapping, :class_name => 'Response', :foreign_key => 'reviewed_object_id'
   
   #return all the versions available for a response map.
   #a person who is doing meta review has to be able to see all the versions of review.
@@ -9,7 +10,7 @@ class MetareviewResponseMap < ResponseMap
       @sorted_array=Array.new
       @prev=Response.all
       for element in @prev
-        if(element.map_id==self.review_mapping.id)
+        if(element.id==self.review_mapping.id)
           array_not_empty=1
           @sorted_array << element
         end
@@ -88,20 +89,21 @@ class MetareviewResponseMap < ResponseMap
 
       #ACS Removed the if condition(and corressponding else) which differentiate assignments as team and individual assignments
       # to treat all assignments as team assignments
-      reviewmapping = TeamReviewResponseMap.find_by_reviewee_id_and_reviewer_id(contributor.id, reviewee.id)
+      reviewmapping = TeamReviewResponse.find_by_reviewee_id_and_reviewer_id(contributor.id, reviewee.id)
       if reviewmapping.nil?
         raise ImportError, "No review mapping was found for contributor, "+contributor.name+", and reviewee, "+row[1].to_s+"."
       end
         
-      existing_mappings = MetareviewResponseMap.find_all_by_reviewee_id_and_reviewer_id_and_reviewed_object_id(reviewee.id, reviewer.id, reviewmapping.id)
+      existing_mappings = MetareviewResponse.find_all_by_reviewee_id_and_reviewer_id_and_reviewed_object_id(reviewee.id, reviewer.id, reviewmapping.id)
       # if no mappings have already been imported for this combination
       # create it. 
 
       if existing_mappings.size == 0
-          MetareviewResponseMap.create(:reviewer_id => reviewer.id, :reviewee_id => reviewee.id, :reviewed_object_id => reviewmapping.id )                            
+          MetareviewResponse.create(:reviewer_id => reviewer.id, :reviewee_id => reviewee.id, :reviewed_object_id => reviewmapping.id )
       end    
       
       index += 1
     end 
   end  
 end
+=end

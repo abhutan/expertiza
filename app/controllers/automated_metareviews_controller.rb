@@ -1,3 +1,4 @@
+require 'automated_metareview'
 class AutomatedMetareviewsController < ApplicationController
   attr_accessor :automated_metareviews
   def index
@@ -11,7 +12,7 @@ class AutomatedMetareviewsController < ApplicationController
   def list
     @automated_metareview = AutomatedMetareview.new
     #pass in the response id as a parameter
-    @response = Response.find_by_map_id(params[:id])
+    @response = Response.find_by_id(params[:id])
     @automated_metareview.calculate_metareview_metrics(@response, params[:id])
     if @automated_metareview.save!
       flash[:notice] = 'Automated Metareview Saved!'
